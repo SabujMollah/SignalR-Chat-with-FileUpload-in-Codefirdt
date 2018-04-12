@@ -1,0 +1,293 @@
+﻿<!DOCTYPE html>
+<html ng-app="myapp">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> My ASP.NET Application</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+   
+    <style type="text/css">
+        #part a {
+            
+            background-color: skyblue;
+        }
+         #part li a {
+            width: 140px;
+           margin-left: 20px;
+           font-size: 16px;
+           padding: 1px;
+        }
+            #part a:hover {
+                font-size: 16px;
+                background-color: white;
+                padding: 1px;
+            }
+        li {
+            list-style: none;
+            float: left;
+        }
+
+            li a {
+                display: block;
+                text-decoration: none;
+                width: 170px;
+                margin-left: 30px;
+                background-color: black;
+                color: white;
+                font-size: 22px;
+                padding: 1px;
+            }
+
+                li a:hover {
+                    background-color: white;
+                    color: black;
+                    text-decoration: none;
+                }
+                li a:active {
+                    background-color: green;
+                }
+       
+    </style>
+</head>
+<body ng-controller="myctrl" >
+    <table  style="width: 100%;margin-top:-50px;">
+
+        <tr style="text-align:center;background-color:tomato;">
+            <td rowspan="3" >
+                <img src="~/pictures/facebook.jpg" style="width:200px; height:100px;"/>
+            </td>
+            <td>
+                <input type="hidden" value="" />
+                <div id="part" style="float:right">
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </td>
+        </tr>
+        <tr style="text-align:center;background-color:tomato;">
+            <td>
+                <h1 style="font-size:30pt;color:white;">SignalR Chat Application</h1>
+            </td>
+        </tr>
+        <tr style="text-align:center;background-color:tomato;">
+            <td colspan="2" >
+                <div class="container">
+                    <div>
+                        @{
+                            var r = false;
+                        }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            r = User.IsInRole("Admin");
+                            if (r == true)
+                            { <span class="noti glyphicon glyphicon-bell" id="bll">
+                                <span class="count"></span>
+                            </span>
+                            }
+                        }
+
+
+                        <div class="noti-content">
+                            <div class="noti-head">
+
+                            </div>
+                            <ul id="content"></ul>
+                        </div>
+
+                    </div>
+            
+                    @{
+                        var p = false;
+                    }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        p = User.IsInRole("Admin");
+                        if (p == true)
+                        {<nav id="mainNavbar">
+                            <ul>
+                                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                <li>@Html.ActionLink("About", "About", "Home")</li>
+                                <li>@Html.ActionLink("Contact", "Contact", "Home", new { @ng_click = "menuClick(Contact)" }, null)</li>
+                                <li class="active">@Html.ActionLink("GroupCreate", "Index", "GroupInfos", new { ng_click = "menuClick(GroupCreate)" }, null)</li>
+                                <li>@Html.ActionLink("RoleCreate", "RoleCreate", "Account")</li>
+                            </ul>
+                        </nav>
+                        }
+                        else
+                        {
+                            <nav id="mainNavbar">
+                                <ul>
+                                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                                    <li>@Html.ActionLink("Chat", "Chat", "Home")</li>
+                                </ul>
+
+                            </nav>
+                        }
+                    }
+                </div>
+            </td>
+        </tr>
+
+        <tr style="height:475px;vertical-align:top;">
+            <td colspan="2">
+                <div ng-controller="myctrl">
+                    <div>
+                        <ul id="licontent"></ul>
+                    </div>
+
+
+                    @RenderBody()
+
+                </div>
+            </td>
+        </tr>
+        <tr style="height: 40px; text-align: right; background-color: black; color: white;">
+            <td colspan="2">&copy; copyrighted by rkrazu2012@yahoo.com</td>
+        </tr>
+    </table>
+
+
+
+
+    
+    
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+  
+
+    <script src="~/Scripts/jquery.signalR-2.2.3.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <style>
+        .noti {
+            position: fixed;
+            right: 380px;
+            color: yellow;
+            cursor: pointer;
+            font-size:20pt;
+        }
+
+        .noti-content {
+            position: fixed;
+            right: 200px;
+            background: #2a70d3;
+            border-radius: 4px;
+            top: 47px;
+            width: 300px;
+            display: none;
+            border: 1px solid #9E9888;
+            font-size:10pt;
+        }
+
+        .noti-head {
+            border-bottom-color: #F5E0b3;
+            background-color: transparent;
+            border-style: solid solid solid;
+            border-bottom-width: 5px;
+        }
+
+        .count {
+            font-size: 12px;
+            color: #F5E0b3;
+        }
+
+        ul#content {
+            max-height: 200px;
+            overflow: auto;
+            padding: 0px;
+            margin: 0px;
+            padding-left: 20px;
+        }
+
+        #content li {
+            margin: 3px;
+            padding: 6px;
+            background: #fff;
+            list-style: none;
+        }
+    </style>
+    <script>
+
+        $(document).ready(function () {
+
+            updateStudents();
+           
+            $(".noti").click(function (e) {
+                e.stopPropagation();
+                $(".count", this).html('&nbsp;');
+                $(".noti-content").show();
+            })
+            $("HTML").click(function () {
+                $(".noti-content").hide();
+            })
+
+            function updateStudents() {
+
+                $.ajax({
+                    url: "/RequestInfoes/GetNotifications",
+                    type: "Get",
+                    dataType: "Json"
+                }).done(function (data) {
+                    console.log(data.data.length);
+          
+                    if (data.data.length == 0) {
+                        $("#content").append("<li>No data</li>");
+                    }
+                    else {
+                  
+                        $(".count").html(data.data.length);
+                        $("#content").empty();
+                        $.each(data.data, function (i, v) {
+                            var cc ;
+                            if (v.Approved == false) {
+                               
+                                $("#content").append(" <li><a href='http://localhost:2352/RequestInfoes/Edit/"+ v.Id+"' >" + v.UserName + " is Requested to add " + v.GroupName + "</a></li>");
+                           
+                   
+                            }
+                            else {
+                            
+                            }
+                        })
+                       
+                       
+
+                    }
+
+                }).fail(function (er) {
+                    console.log();
+                })
+            }
+            function updatecount() {
+                var c = 0;
+        
+                c = parseInt($(".count").html()) || 0;
+                c++;
+                $(".count").html($("#content li").length);
+               
+
+            }
+            var chat = $.connection.myHub;
+            chat.client.message = function (msg) {
+                if (msg && msg.toLowerCase() == "newrecord") {
+      
+                }
+            }
+            $.connection.hub.start().done(function () {
+
+            })
+        });
+
+    </script>
+
+</body>
+</html>
